@@ -1,0 +1,121 @@
+/* Pengaturan Dasar */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #101010; /* Warna latar belakang gelap seperti Threads */
+    color: #F5F5F5; /* Warna teks putih */
+}
+
+/* Tata Letak Utama (Mobile First) */
+.app-container {
+    display: flex;
+    flex-direction: column; /* Susun dari atas ke bawah di mobile */
+    min-height: 100vh;
+}
+
+.content {
+    padding: 20px;
+    flex-grow: 1; /* Konten akan mengisi sisa ruang */
+}
+
+/* Header */
+header {
+    background-color: #181818;
+    padding: 15px 20px;
+    border-bottom: 1px solid #282828;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 1.2rem;
+}
+
+/* Sidebar (di mobile kita buat seperti menu navigasi biasa) */
+.sidebar {
+    background-color: #181818;
+    padding: 10px 0;
+    border-bottom: 1px solid #282828;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    display: flex; /* Buat menu jadi horizontal */
+    justify-content: space-around; /* Beri jarak antar menu */
+}
+
+.sidebar nav a {
+    color: #a8a8a8;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+    background-color: #282828;
+    color: #F5F5F5;
+}
+
+/* Footer */
+footer {
+    background-color: #181818;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #a8a8a8;
+    border-top: 1px solid #282828;
+}
+
+footer a {
+    color: #F5F5F5;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Aturan untuk layar lebih besar (Desktop) */
+@media (min-width: 768px) {
+    .app-container {
+        display: grid;
+        grid-template-columns: 240px 1fr; /* Sidebar 240px, Konten sisanya */
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas: 
+            "header header"
+            "sidebar content"
+            "sidebar footer";
+    }
+
+    header { grid-area: header; }
+    .sidebar { 
+        grid-area: sidebar; 
+        border-right: 1px solid #282828;
+        border-bottom: none;
+    }
+    .content { grid-area: content; }
+    footer { 
+        grid-area: footer;
+        border-top: none; /* Hapus border atas karena sudah di sidebar */
+        text-align: left;
+        padding-left: 20px;
+    }
+
+    /* Ubah navigasi sidebar menjadi vertikal di desktop */
+    .sidebar nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 15px;
+    }
+    
+    .sidebar nav li {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
