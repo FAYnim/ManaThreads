@@ -7,20 +7,23 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #101010; /* Warna latar belakang gelap seperti Threads */
-    color: #F5F5F5; /* Warna teks putih */
+    background-color: #101010;
+    color: #F5F5F5;
+    overflow-x: hidden; /* Mencegah scroll horizontal saat sidebar keluar */
 }
 
-/* Tata Letak Utama (Mobile First) */
+/* Tata Letak Utama */
 .app-container {
-    display: flex;
-    flex-direction: column; /* Susun dari atas ke bawah di mobile */
+    position: relative;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .content {
     padding: 20px;
-    flex-grow: 1; /* Konten akan mengisi sisa ruang */
+    padding-top: 80px; /* Beri ruang untuk header */
+    flex-grow: 1; /* Membuat konten mengisi ruang yang tersedia */
 }
 
 /* Header */
@@ -28,24 +31,66 @@ header {
     background-color: #181818;
     padding: 15px 20px;
     border-bottom: 1px solid #282828;
-    text-align: center;
+    text-align: left;
+    position: fixed; /* Buat header tetap di atas */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: visible; /* Pastikan tidak ada clipping */
 }
 
 header h1 {
     font-size: 1.2rem;
 }
 
-/* Sidebar (di mobile kita buat seperti menu navigasi biasa) */
+/* Tombol Hamburger */
+.hamburger-btn {
+    width: 40px; /* Ukuran area klik */
+    height: 40px; /* Ukuran area klik */
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1002; /* Pastikan di atas sidebar */
+    overflow: visible; /* Pastikan tidak ada clipping */
+}
+
+.hamburger-btn i {
+    font-size: 1.5rem; /* Ukuran ikon Font Awesome */
+    color: #F5F5F5; /* Warna ikon Font Awesome */
+}
+
+/* Sidebar */
 .sidebar {
-    background-color: #181818;
-    padding: 10px 0;
-    border-bottom: 1px solid #282828;
+    position: fixed;
+    top: 0;
+    right: -280px; /* Mulai dari luar layar kanan */
+    width: 250px;
+    height: 100%;
+    background-color: #1c1c1c;
+    padding: 20px;
+    z-index: 1001;
+    transition: right 0.3s ease-in-out;
+    border-left: 1px solid #282828;
+}
+
+.sidebar.active {
+    right: 0; /* Munculkan sidebar */
 }
 
 .sidebar nav ul {
     list-style: none;
-    display: flex; /* Buat menu jadi horizontal */
-    justify-content: space-around; /* Beri jarak antar menu */
+    padding-top: 50px;
+}
+
+.sidebar nav li {
+    margin-bottom: 15px;
 }
 
 .sidebar nav a {
@@ -53,7 +98,14 @@ header h1 {
     text-decoration: none;
     padding: 10px 15px;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    display: flex; /* Menggunakan flexbox untuk perataan ikon dan teks */
+    align-items: center; /* Pusatkan ikon dan teks secara vertikal */
+    width: 100%;
+}
+
+.sidebar nav a i {
+    margin-right: 10px; /* Jarak antara ikon dan teks */
 }
 
 .sidebar nav a:hover,
@@ -61,6 +113,26 @@ header h1 {
     background-color: #282828;
     color: #F5F5F5;
 }
+
+/* Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
 
 /* Footer */
 footer {
@@ -81,41 +153,224 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* Aturan untuk layar lebih besar (Desktop) */
+footer a i {
+    margin-right: 5px;
+}
+
+/* Hapus aturan layout grid untuk desktop karena kita pakai slide-in sidebar */
 @media (min-width: 768px) {
-    .app-container {
-        display: grid;
-        grid-template-columns: 240px 1fr; /* Sidebar 240px, Konten sisanya */
-        grid-template-rows: auto 1fr auto;
-        grid-template-areas: 
-            "header header"
-            "sidebar content"
-            "sidebar footer";
+    /* Tidak ada perubahan layout grid lagi */
+    .content {
+        padding-left: 40px;
+        padding-right: 40px;
     }
+}
 
-    header { grid-area: header; }
-    .sidebar { 
-        grid-area: sidebar; 
-        border-right: 1px solid #282828;
-        border-bottom: none;
-    }
-    .content { grid-area: content; }
-    footer { 
-        grid-area: footer;
-        border-top: none; /* Hapus border atas karena sudah di sidebar */
-        text-align: left;
-        padding-left: 20px;
-    }
+/* -- Dashboard -- */
 
-    /* Ubah navigasi sidebar menjadi vertikal di desktop */
-    .sidebar nav ul {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 0 15px;
-    }
-    
-    .sidebar nav li {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+/* Grid untuk statistik */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background-color: #1c1c1c;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #282828;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.stat-card p {
+    font-size: 0.9rem;
+    color: #a8a8a8;
+}
+
+/* Card untuk ide terbaru */
+.recent-ideas {
+    background-color: #1c1c1c;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #282828;
+}
+
+.recent-ideas h3 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.recent-ideas ul {
+    list-style: none;
+    padding-left: 5px;
+}
+
+.recent-ideas li {
+    padding: 10px 0;
+    border-bottom: 1px solid #282828;
+    font-size: 0.95rem;
+}
+
+.recent-ideas li:last-child {
+    border-bottom: none;
+}
+
+/* -- General Form & Card Styling for other pages -- */
+
+.form-container,
+.results-container {
+    background-color: #1c1c1c;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #282828;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: #F5F5F5;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #282828;
+    border-radius: 8px;
+    background-color: #101010;
+    color: #F5F5F5;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #007bff; /* Warna fokus */
+}
+
+textarea {
+    resize: vertical; /* Hanya izinkan resize vertikal */
+}
+
+button {
+    background-color: #007bff; /* Warna biru Threads */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Styling untuk halaman Draft */
+.draft-list {
+    display: grid;
+    gap: 15px;
+}
+
+.draft-item {
+    background-color: #1c1c1c;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #282828;
+}
+
+.draft-item .draft-content {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: #E0E0E0;
+}
+
+.draft-item .draft-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #a8a8a8;
+    margin-bottom: 15px;
+}
+
+.draft-item .draft-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.draft-item .btn-edit,
+.draft-item .btn-delete {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+.draft-item .btn-delete {
+    background-color: #dc3545;
+}
+
+.draft-item .btn-delete:hover {
+    background-color: #c82333;
+}
+
+/* Styling untuk halaman Generate AI */
+.output-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: flex-end;
+}
+
+.output-actions button {
+    padding: 10px 18px;
+    font-size: 0.95rem;
+}
+
+/* Range input styling */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #282828;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
 }

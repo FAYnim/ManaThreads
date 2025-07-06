@@ -6,10 +6,12 @@
     <title>ManaThreads</title>
     <!-- Hubungkan ke file CSS -->
     <link rel="stylesheet" href="assets/style.css">
+    <script src="https://kit.fontawesome.com/6ae1bb73d0.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
     <div class="app-container">
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <?php include 'includes/header.php'; ?>
         <?php include 'includes/sidebar.php'; ?>
         
